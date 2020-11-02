@@ -1,5 +1,7 @@
 
+import json
 import time
+import random
 import flask
 from flask import request, jsonify
 
@@ -33,18 +35,65 @@ def home():
 
 
 # Post pour calculer fitness de l'individu (somme des uns)
-@app.route('/api/post/evaluate', methods =['POST'])
+@app.route('/api/evaluate', methods =['POST'])
 def api_post():
+
     req_data = request.get_json()
+
+    # initialiser le dictionnaire contenant l'état d'execution
+    data = {
+    "execution": {
+        "status": "RUNNING",
+        "output": { "result":"ERROR",
+                    "data":{}
+        }
+    }
+    }
+
+    # initialiser la variable contenant le score
     sum = 0 
-    print (tuple (req_data['data']))
-    print ('calculating fitness ...')
+    print ('calculating score ...')
+
+
+    # preparer le nom du fichier temporaire
+    filename = str(req_data['id'])+'.tmp'
+    # initialiser le fichier
+    with open(filename, "w") as write_file:
+        json.dump(data, write_file)
+    write_file.close()
+
+    # Simuler le calcule de l'evaluation de l'individu avec une probabilité d'erreur de 20%
     time.sleep(10)
-    for x in (tuple (req_data['data'])):
-        sum = sum + int(x)
-    print ('finished !')
+    if (random.random()<0.8):
+        for x in (tuple (req_data['bits'])):
+            sum = sum + int(x)
+        output = {  "result": "SUCCESS",
+                "data": { "id": req_data['id'], 
+                            "bits": req_data['bits'], 
+                            "score": sum}}
+        data["execution"]["output"]=output
+    else:
+        output = { "result":"ERROR",
+                    "data":{}
+        }
+
+    # mettre a jour l'etat d'execution et les resultats
+    data["execution"]["status"]="TERMINATED"
+    data["execution"]["output"]=output
+
+    # ecrire les resultats dans le fichier
+    with open(filename, "w") as write_file:
+        json.dump(data, write_file)
+
+    print ('TERMINATED')
+    write_file.close()
     return jsonify(sum)
 
+
+
+
+# execution: RUNNING / TERMINATED 
+# output status: ERROR / SUCCESS and results  
 
 # A route to return all of the available entries in our catalog.
 @app.route('/api/v1/resources/books/all', methods=['GET'])
