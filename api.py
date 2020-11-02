@@ -1,3 +1,5 @@
+
+import time
 import flask
 from flask import request, jsonify
 
@@ -36,8 +38,11 @@ def api_post():
     req_data = request.get_json()
     sum = 0 
     print (tuple (req_data['data']))
+    print ('calculating fitness ...')
+    time.sleep(10)
     for x in (tuple (req_data['data'])):
         sum = sum + int(x)
+    print ('finished !')
     return jsonify(sum)
 
 
