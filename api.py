@@ -36,7 +36,7 @@ def home():
 
 # Post pour calculer fitness de l'individu (somme des uns)
 @app.route('/api/evaluate', methods =['POST'])
-def api_post():
+def api_evaluate():
 
     req_data = request.get_json()
 
@@ -89,7 +89,26 @@ def api_post():
     write_file.close()
     return jsonify(sum)
 
+# retourner l'etat d'execution d'individu
+@app.route('/api/evaluate/status', methods =['POST'])
+def api_status():
+    req_data = request.get_json()
+    filename = str(req_data['id'])+'.tmp'
+    with open(filename, "r") as read_file:
+        data = json.load(read_file)
+    read_file.close()
+    return jsonify(data)
 
+# retourner si une evaluation d'un individu est terminé
+@app.route('/api/evaluate/esttermine', methods =['POST'])
+def api_est_termine():
+    req_data = request.get_json()
+    filename = str(req_data['id'])+'.tmp'
+    with open(filename, "r") as read_file:
+        data = json.load(read_file)
+    read_file.close()
+
+    return jsonify((data["execution"]["status"]=="TERMINATED"))
 
 
 # execution: RUNNING / TERMINATED 
