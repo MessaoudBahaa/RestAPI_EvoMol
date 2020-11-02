@@ -33,7 +33,7 @@ def home():
 
 
 # Post pour calculer fitness de l'individu (somme des uns)
-@app.route('/api/post/fitness', methods =['POST'])
+@app.route('/api/post/evaluate', methods =['POST'])
 def api_post():
     req_data = request.get_json()
     sum = 0 
