@@ -30,10 +30,16 @@ def home():
 <p>A prototype API for distant reading of science fiction novels.</p>'''
 
 
-@app.route('/api/post/test', methods =['POST'])
+# Post pour calculer fitness de l'individu (somme des uns)
+@app.route('/api/post/fitness', methods =['POST'])
 def api_post():
     req_data = request.get_json()
-    return req_data['name']
+    sum = 0 
+    print (tuple (req_data['data']))
+    for x in (tuple (req_data['data'])):
+        sum = sum + int(x)
+    return jsonify(sum)
+
 
 # A route to return all of the available entries in our catalog.
 @app.route('/api/v1/resources/books/all', methods=['GET'])
