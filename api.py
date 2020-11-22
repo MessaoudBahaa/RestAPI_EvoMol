@@ -108,8 +108,9 @@ def api_get_evaluation_data():
     with open(filename, "r") as read_file:
         data = json.load(read_file)
     read_file.close()
-    return jsonify((data["execution"]["output"])
+    return jsonify((data["execution"]["output"]))
 
 # execution: RUNNING / TERMINATED 
 # output status: ERROR / SUCCESS and results  
 
+app.run()
