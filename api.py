@@ -113,4 +113,11 @@ def api_get_evaluation_data():
 # execution: RUNNING / TERMINATED 
 # output status: ERROR / SUCCESS and results  
 
+
+# api avec 
+# changer aux gets
+# documentation de l'api 
+# Modulaire (decoupler l'acces aux données) (DAO DTO)
+
+
 app.run()
