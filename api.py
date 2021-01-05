@@ -4,9 +4,15 @@ import time
 import random
 import flask
 from flask import request, jsonify
+from datalayer import DataLayer
+
 
 app = flask.Flask(__name__)
 app.config["DEBUG"] = True
+
+
+DL=DataLayer()
+
 
 
 @app.route('/', methods=['GET'])
@@ -19,54 +25,33 @@ def home():
 def api_evaluate():
 
     req_data = request.get_json()
+    id = req_data['id']
+    bits = req_data['bits']
+    
 
-    # initialiser le dictionnaire contenant l'état d'execution
-    data = {
-    "execution": {
-        "status": "RUNNING",
-        "output": { "result":"ERROR",
-                    "data":{}
-        }
-    }
-    }
+
+    DL.addMolecule(id,bits,'RUNNING','',{})
+
+
 
     # initialiser la variable contenant le score
     sum = 0 
     print ('calculating score ...')
-
-
-    # preparer le nom du fichier temporaire
-    filename = str(req_data['id'])+'.tmp'
-    # initialiser le fichier
-    with open(filename, "w") as write_file:
-        json.dump(data, write_file)
-    write_file.close()
-
+    
     # Simuler le calcule de l'evaluation de l'individu avec une probabilité d'erreur de 20%
     time.sleep(10)
     if (random.random()<0.8):
-        for x in (tuple (req_data['bits'])):
+        for x in (tuple (bits)):
             sum = sum + int(x)
-        output = {  "result": "SUCCESS",
-                "data": { "id": req_data['id'], 
-                            "bits": req_data['bits'], 
-                            "score": sum}}
-        data["execution"]["output"]=output
+
+        DL.updateMolecule(id,'FINISHED','SUCCESS',{'score' : sum})
+      
     else:
-        output = { "result":"ERROR",
-                    "data":{}
-        }
+        DL.updateMolecule(id,'FINISHED','ERROR',{})
+       
 
-    # mettre a jour l'etat d'execution et les resultats
-    data["execution"]["status"]="TERMINATED"
-    data["execution"]["output"]=output
-
-    # ecrire les resultats dans le fichier
-    with open(filename, "w") as write_file:
-        json.dump(data, write_file)
-
-    print ('TERMINATED')
-    write_file.close()
+    print ('FINISHED')
+ 
     return jsonify(sum)
 
 # retourner l'etat d'execution d'individu
