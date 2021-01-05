@@ -45,24 +45,21 @@ def api_evaluate():
             sum = sum + int(x)
 
         DL.updateMolecule(id,'FINISHED','SUCCESS',{'score' : sum})
-      
     else:
         DL.updateMolecule(id,'FINISHED','ERROR',{})
-       
 
-    print ('FINISHED')
- 
     return jsonify(sum)
 
 # retourner l'etat d'execution d'individu
-@app.route('/api/evaluate/status', methods =['POST'])
+@app.route('/api/evaluate/status', methods =['GET'])
 def api_status():
-    req_data = request.get_json()
-    filename = str(req_data['id'])+'.tmp'
-    with open(filename, "r") as read_file:
-        data = json.load(read_file)
-    read_file.close()
-    return jsonify(data)
+    if 'id' in request.args:
+        id = int(request.args['id'])
+    else:
+        return "Error: No id field provided. Please specify an id."
+    molecule = DL.getMolecule(id)
+
+    return jsonify(molecule['status'])
 
 # retourner si une evaluation d'un individu est terminé
 @app.route('/api/evaluate/esttermine', methods =['POST'])

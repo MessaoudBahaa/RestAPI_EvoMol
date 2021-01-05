@@ -22,13 +22,11 @@ class DataLayer:
         self.db.molecules.insert_one(molecule)
         
 
-    def getMolecule(self):
-        #retourner execution
-        return 0
+    def getMolecule(self,id):
+        #trouver
+        molecule = self.db.molecules.find_one({'id': id})
+        return molecule
 
     def updateMolecule(self,id,status,result,output):
-        
-    
+        #mettre a jour la molecule
         self.db.molecules.update_one({'id': id}, { '$set' : {'status':status, 'result' : result, 'output' : output} })
-        #mettre a jour l'exuction
-        return 0
