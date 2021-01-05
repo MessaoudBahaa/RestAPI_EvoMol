@@ -17,22 +17,18 @@ DL=DataLayer()
 
 @app.route('/', methods=['GET'])
 def home():
-    return '''<h1>API for calculating fitness</h1>'''
+    return '''<h1>API for molecules evaluation</h1>'''
 
 
 # Post pour calculer fitness de l'individu (somme des uns)
-@app.route('/api/evaluate', methods =['POST'])
-def api_evaluate():
+@app.route('/evaluation', methods =['POST'])
+def molecule_evaluation():
 
     req_data = request.get_json()
     id = req_data['id']
     bits = req_data['bits']
     
-
-
     DL.addMolecule(id,bits,'RUNNING','',{})
-
-
 
     # initialiser la variable contenant le score
     sum = 0 
@@ -48,58 +44,38 @@ def api_evaluate():
     else:
         DL.updateMolecule(id,'FINISHED','ERROR',{})
 
+
     return jsonify(sum)
 
 # retourner l'etat d'execution d'individu
-@app.route('/api/evaluate/status', methods =['GET'])
-def api_status():
-    if 'id' in request.args:
-        id = int(request.args['id'])
-    else:
-        return "Error: No id field provided. Please specify an id."
-    molecule = DL.getMolecule(id)
-
-    return jsonify(molecule['status'])
+@app.route('/evaluation/<id>/<field>', methods =['GET'])
+def molecule_fields(id,field):
+    molecule = DL.getMolecule(int(id))
+    
+    if (molecule is None) : 
+        return "molecule not found"
+    elif (field in ("status","output","result")) : 
+        return molecule[field]
+    else :
+        return "not valid field"
 
 # retourner si une evaluation d'un individu est terminé
-@app.route('/api/evaluate/esttermine', methods =['POST'])
-def api_est_termine():
-    req_data = request.get_json()
-    filename = str(req_data['id'])+'.tmp'
-    with open(filename, "r") as read_file:
-        data = json.load(read_file)
-    read_file.close()
-
-    return jsonify((data["execution"]["status"]=="TERMINATED"))
-
-# retourner si une evaluation d'un individu etait un succés
-@app.route('/api/evaluate/estsucces', methods =['POST'])
-def api_est_succes():
-    req_data = request.get_json()
-    filename = str(req_data['id'])+'.tmp'
-    with open(filename, "r") as read_file:
-        data = json.load(read_file)
-    read_file.close()
-    return jsonify((data["execution"]["output"]["result"]=="SUCCESS"))
-
-# retourner les resultats d'un evaluation d'un individu
-@app.route('/api/evaluate/output', methods =['POST'])
-def api_get_evaluation_data():
-    req_data = request.get_json()
-    filename = str(req_data['id'])+'.tmp'
-    with open(filename, "r") as read_file:
-        data = json.load(read_file)
-    read_file.close()
-    return jsonify((data["execution"]["output"]))
-
-# execution: RUNNING / TERMINATED 
-# output status: ERROR / SUCCESS and results  
+@app.route('/evaluation/<id>', methods =['GET'])
+def molecule_status(id):
+    
+    if ('status' in request.args ) :
+        status = request.args['status']
+    else:
+        return "Error : no status field"
+    molecule = DL.getMolecule(int(id))
+    if (molecule is None) : 
+        return "molecule not found"
+    else :
+        return jsonify(molecule["status"]==status)
 
 
-# api avec 
-# changer aux gets
-# documentation de l'api 
-# Modulaire (decoupler l'acces aux données) (DAO DTO)
+
+
 
 
 app.run()
