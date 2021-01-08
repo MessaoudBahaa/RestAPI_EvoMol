@@ -35,7 +35,7 @@ def molecule_evaluation():
     print ('calculating score ...')
     
     # Simuler le calcule de l'evaluation de l'individu avec une probabilité d'erreur de 20%
-    time.sleep(10)
+    time.sleep(15)
     if (random.random()<0.8):
         for x in (tuple (bits)):
             sum = sum + int(x)
@@ -62,12 +62,17 @@ def molecule_fields(id,field):
 # retourner si une evaluation d'un individu est terminé
 @app.route('/evaluation/<id>', methods =['GET'])
 def molecule_status(id):
-    
+    molecule = DL.getMolecule(int(id))
+
     if ('status' in request.args ) :
         status = request.args['status']
     else:
-        return "Error : no status field"
-    molecule = DL.getMolecule(int(id))
+        if (molecule is None) : 
+            return "molecule not found"
+        else :
+            return molecule
+
+    
     if (molecule is None) : 
         return "molecule not found"
     else :

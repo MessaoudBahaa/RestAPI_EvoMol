@@ -23,11 +23,11 @@ def evaluate(individu):
     r = requests.post('http://127.0.0.1:5000/evaluation', json=individu)
 
 
+for i in range(4) :
+    payload = {'id':i,'bits':'1100011100101101'}
+    evaluate(payload)
 
-payload = {'id':8,'bits':'1100011100101101'}
-evaluate(payload)
-
-print ('I dont wait !')
+print ('continuer execution ...')
 """
 
 

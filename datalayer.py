@@ -24,7 +24,22 @@ class DataLayer:
 
     def getMolecule(self,id):
         #trouver
-        molecule = self.db.molecules.find_one({'id': id})
+        moleculeres = self.db.molecules.find_one({'id': id})
+        
+        
+        if (moleculeres == None):
+            molecule = None
+        else:
+            
+            molecule = {
+                'id' : moleculeres['id'] ,
+                'bits' :  moleculeres['bits'] ,
+                'status' :  moleculeres['status'] ,
+                'result' :  moleculeres['result'] ,
+                'output' :  moleculeres['output'] ,
+            }
+        
+        
         return molecule
 
     def updateMolecule(self,id,status,result,output):
